@@ -97,7 +97,7 @@ const DealJacketQueryRootType = new GraphQLObjectType({
     fields: () => ({
         dealjackets: {
             type: new GraphQLList(DealJacketType),
-            args: { status: { type: GraphQLString } },
+            args: { status: { type: GraphQLString }, dealership: { type: GraphQLString } },
             resolve: (root, args) => DealJacket.find(args,function(err, dealjackets){}).exec()
         }
     })
