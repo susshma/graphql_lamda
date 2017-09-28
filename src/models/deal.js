@@ -22,4 +22,5 @@ var dealSchema = new mongoose.Schema({
     }
 }, {collection:"DealList"});
 var Deal = mongoose.model('Deal', dealSchema);
-export default Deal;
+
+export default Deal

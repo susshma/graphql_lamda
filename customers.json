@@ -1,0 +1,2 @@
+export customer = {{"_id":{"$oid":"59c6908ece1fca9e9db0ca8f"},"id":1,"first_name":"M.O","last_name":"Bhanne","address_line_1":"123 main","address_line_2":"","state":"NY","city":"Jamaica","zip":11435}
+{"_id":{"$oid":"59c949dbce1fca9e9db0f253"},"first_name":"Irene","last_name":"Shih","address_line_1":"123 main","address_line_2":"","state":"NY","city":"Westbury","zip":"11435"}}

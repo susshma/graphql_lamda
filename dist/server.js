@@ -20,7 +20,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "38c573d70122fe6b840a"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "268c664bbbc9a1b8ed9e"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -824,46 +824,63 @@ if(true) {
 
 /***/ }),
 
-/***/ "./src/index.js":
+/***/ "./server.js":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_http__ = __webpack_require__("http");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_http___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_http__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_graphql__ = __webpack_require__("graphql");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_graphql___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_graphql__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_mongoose__ = __webpack_require__("mongoose");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_mongoose___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_mongoose__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__server__ = __webpack_require__("./src/server.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__schema__ = __webpack_require__("./src/schema.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_body_parser__ = __webpack_require__("body-parser");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_body_parser___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_body_parser__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_graphql_server_express__ = __webpack_require__("graphql-server-express");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_graphql_server_express___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_graphql_server_express__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__src_schema__ = __webpack_require__("./src/schema.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_mongoose__ = __webpack_require__("mongoose");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_mongoose___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_mongoose__);
 
 
 
 
+var express = __webpack_require__("express");
+var body_parser = __webpack_require__("body-parser");
+var awsServerlessExpress = __webpack_require__("aws-serverless-express");
 
-
-var server = __WEBPACK_IMPORTED_MODULE_0_http___default.a.createServer(__WEBPACK_IMPORTED_MODULE_3__server__["default"]);
-var currentApp = __WEBPACK_IMPORTED_MODULE_3__server__["default"];
-server.listen(3000, function () {
-  console.log('GraphQL-server listening on port 3000.');
-});
-if (true) {
-  module.hot.accept(["./src/server.js", "./src/schema.js"], function(__WEBPACK_OUTDATED_DEPENDENCIES__) { /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__server__ = __webpack_require__("./src/server.js"); /* harmony import */ __WEBPACK_IMPORTED_MODULE_4__schema__ = __webpack_require__("./src/schema.js"); (function () {
-    server.removeListener('request', currentApp);
-    server.on('request', __WEBPACK_IMPORTED_MODULE_3__server__["default"]);
-    currentApp = __WEBPACK_IMPORTED_MODULE_3__server__["default"];
-  })(__WEBPACK_OUTDATED_DEPENDENCIES__); });
-}
-
-__WEBPACK_IMPORTED_MODULE_2_mongoose___default.a.connect('mongodb://localhost:27017/local');
-var db = __WEBPACK_IMPORTED_MODULE_2_mongoose___default.a.connection;
+__WEBPACK_IMPORTED_MODULE_3_mongoose___default.a.connect('mongodb://52.3.232.149:27017/local');
+var db = __WEBPACK_IMPORTED_MODULE_3_mongoose___default.a.connection;
 db.on('error', function () {
   console.log('---FAILED to connect to mongoose');
 });
 db.once('openUri', function () {
   console.log('+++Connected to mongoose');
 });
+
+var app = express();
+app.use(body_parser.json({ limit: '50mb' }));
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
+app.use('/graphiql', Object(__WEBPACK_IMPORTED_MODULE_1_graphql_server_express__["graphiqlExpress"])({
+  endpointURL: '/graphql',
+  schema: __WEBPACK_IMPORTED_MODULE_2__src_schema__["a" /* default */]
+}));
+app.use('/graphql', __WEBPACK_IMPORTED_MODULE_0_body_parser___default.a.json(), Object(__WEBPACK_IMPORTED_MODULE_1_graphql_server_express__["graphqlExpress"])({ schema: __WEBPACK_IMPORTED_MODULE_2__src_schema__["a" /* default */] }));
+
+// let's set the port on which the server will run
+app.set('port', 3000);
+
+// start the server
+app.listen(app.get('port'), function () {
+  var port = app.get('port');
+  console.log('GraphQL Server Running at http://127.0.0.1:' + port);
+});
+
+var server = awsServerlessExpress.createServer(app);
+
+exports.handler = function (event, context) {
+  return awsServerlessExpress.proxy(server, event, context);
+};
 
 /***/ }),
 
@@ -937,6 +954,7 @@ var dealSchema = new __WEBPACK_IMPORTED_MODULE_0_mongoose___default.a.Schema({
     }
 }, { collection: "DealList" });
 var Deal = __WEBPACK_IMPORTED_MODULE_0_mongoose___default.a.model('Deal', dealSchema);
+
 /* harmony default export */ __webpack_exports__["a"] = (Deal);
 
 /***/ }),
@@ -989,12 +1007,12 @@ var DealJacket = __WEBPACK_IMPORTED_MODULE_0_mongoose___default.a.model('DealJac
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__models_customer__ = __webpack_require__("./src/models/customer.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__models_dealjacket__ = __webpack_require__("./src/models/dealjacket.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__models_deal__ = __webpack_require__("./src/models/deal.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_graphql__ = __webpack_require__("graphql");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_graphql___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_graphql__);
+
 
 
 
@@ -1022,7 +1040,7 @@ var DealJacketType = new __WEBPACK_IMPORTED_MODULE_3_graphql__["GraphQLObjectTyp
                     return __WEBPACK_IMPORTED_MODULE_0__models_customer__["a" /* default */].findById(dealjacket.coapplicant);
                 }
             },
-            deals: {
+            deal: {
                 type: DealType,
                 resolve: function resolve(dealjacket) {
                     return __WEBPACK_IMPORTED_MODULE_2__models_deal__["a" /* default */].findById(dealjacket.deal);
@@ -1050,6 +1068,32 @@ var CustomerType = new __WEBPACK_IMPORTED_MODULE_3_graphql__["GraphQLObjectType"
     }
 });
 
+var VehicleType = new __WEBPACK_IMPORTED_MODULE_3_graphql__["GraphQLObjectType"]({
+    name: "Vehicle",
+    description: "This represent a vehicle",
+    fields: function fields() {
+        return {
+            year: { type: __WEBPACK_IMPORTED_MODULE_3_graphql__["GraphQLString"] },
+            make: { type: __WEBPACK_IMPORTED_MODULE_3_graphql__["GraphQLString"] },
+            model: { type: __WEBPACK_IMPORTED_MODULE_3_graphql__["GraphQLString"] },
+            trim: { type: __WEBPACK_IMPORTED_MODULE_3_graphql__["GraphQLString"] }
+        };
+    }
+});
+
+var financeType = new __WEBPACK_IMPORTED_MODULE_3_graphql__["GraphQLObjectType"]({
+    name: "finance",
+    description: "This represent a finance",
+    fields: function fields() {
+        return {
+            product_type: { type: __WEBPACK_IMPORTED_MODULE_3_graphql__["GraphQLString"] },
+            cash_selling_price: { type: __WEBPACK_IMPORTED_MODULE_3_graphql__["GraphQLString"] },
+            unpaid_balance: { type: __WEBPACK_IMPORTED_MODULE_3_graphql__["GraphQLString"] },
+            esitmated_monthly_payment: { type: __WEBPACK_IMPORTED_MODULE_3_graphql__["GraphQLString"] }
+        };
+    }
+});
+
 var DealType = new __WEBPACK_IMPORTED_MODULE_3_graphql__["GraphQLObjectType"]({
     name: "Deal",
     description: "This represent a deal",
@@ -1057,13 +1101,8 @@ var DealType = new __WEBPACK_IMPORTED_MODULE_3_graphql__["GraphQLObjectType"]({
         return {
             _id: { type: new __WEBPACK_IMPORTED_MODULE_3_graphql__["GraphQLNonNull"](__WEBPACK_IMPORTED_MODULE_3_graphql__["GraphQLString"]) },
             deal_type: { type: new __WEBPACK_IMPORTED_MODULE_3_graphql__["GraphQLNonNull"](__WEBPACK_IMPORTED_MODULE_3_graphql__["GraphQLString"]) },
-            vehilce: { type: new __WEBPACK_IMPORTED_MODULE_3_graphql__["GraphQLNonNull"](__WEBPACK_IMPORTED_MODULE_3_graphql__["GraphQLString"]) },
-            finance: {
-                type: __WEBPACK_IMPORTED_MODULE_3_graphql__["GraphQLString"],
-                resolve: function resolve(customer) {
-                    return customer.first_name + ' ' + customer.last_name;
-                }
-            }
+            vehilce: { type: VehicleType },
+            finance: { type: financeType }
         };
     }
 });
@@ -1094,35 +1133,7 @@ var DealJacketSchema = new __WEBPACK_IMPORTED_MODULE_3_graphql__["GraphQLSchema"
     // mutation: BlogMutationRootType
 });
 
-/* harmony default export */ __webpack_exports__["default"] = (DealJacketSchema);
-
-/***/ }),
-
-/***/ "./src/server.js":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_express__ = __webpack_require__("express");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_express___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_express__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_body_parser__ = __webpack_require__("body-parser");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_body_parser___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_body_parser__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_graphql_server_express__ = __webpack_require__("graphql-server-express");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_graphql_server_express___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_graphql_server_express__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__schema__ = __webpack_require__("./src/schema.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_mongoose__ = __webpack_require__("mongoose");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_mongoose___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_mongoose__);
-
-
-
-
-
-var app = __WEBPACK_IMPORTED_MODULE_0_express___default()();
-app.use('/graphiql', Object(__WEBPACK_IMPORTED_MODULE_2_graphql_server_express__["graphiqlExpress"])({
-  endpointURL: '/graphql'
-}));
-app.use('/graphql', __WEBPACK_IMPORTED_MODULE_1_body_parser___default.a.json(), Object(__WEBPACK_IMPORTED_MODULE_2_graphql_server_express__["graphqlExpress"])({ schema: __WEBPACK_IMPORTED_MODULE_3__schema__["default"] }));
-/* harmony default export */ __webpack_exports__["default"] = (app);
+/* harmony default export */ __webpack_exports__["a"] = (DealJacketSchema);
 
 /***/ }),
 
@@ -1130,8 +1141,15 @@ app.use('/graphql', __WEBPACK_IMPORTED_MODULE_1_body_parser___default.a.json(), 
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__("./node_modules/webpack/hot/poll.js?1000");
-module.exports = __webpack_require__("./src/index.js");
+module.exports = __webpack_require__("./server.js");
 
+
+/***/ }),
+
+/***/ "aws-serverless-express":
+/***/ (function(module, exports) {
+
+module.exports = require("aws-serverless-express");
 
 /***/ }),
 
@@ -1160,13 +1178,6 @@ module.exports = require("graphql");
 /***/ (function(module, exports) {
 
 module.exports = require("graphql-server-express");
-
-/***/ }),
-
-/***/ "http":
-/***/ (function(module, exports) {
-
-module.exports = require("http");
 
 /***/ }),
 

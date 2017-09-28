@@ -1,6 +1,7 @@
 import Customer from './models/customer';
 import DealJacket from './models/dealjacket'
 import Deal from './models/deal'
+
 import {
   // These are the basic GraphQL types need in this tutorial
   GraphQLString,
@@ -33,7 +34,7 @@ const DealJacketType = new GraphQLObjectType({
             return Customer.findById(dealjacket.coapplicant)
         }
     },
-    deals: {
+    deal: {
         type: DealType,
         resolve: function(dealjacket) {
             return Deal.findById(dealjacket.deal)
@@ -56,18 +57,37 @@ const CustomerType = new GraphQLObjectType({
   })
 });
 
+const VehicleType = new GraphQLObjectType({
+    name: "Vehicle",
+    description: "This represent a vehicle",
+    fields: () => ({
+        year: {type: GraphQLString},
+        make: {type: GraphQLString},
+        model: {type: GraphQLString},
+        trim: {type: GraphQLString}
+    })
+});
+
+const financeType = new GraphQLObjectType({
+    name: "finance",
+    description: "This represent a finance",
+    fields: () => ({
+        product_type: {type: GraphQLString},
+        cash_selling_price: {type: GraphQLString},
+        unpaid_balance: {type: GraphQLString},
+        esitmated_monthly_payment: {type: GraphQLString}
+    })
+});
+
 const DealType = new GraphQLObjectType({
-  name: "Deal",
-  description: "This represent a deal",
-  fields: () => ({
-    _id: {type: new GraphQLNonNull(GraphQLString)},
-    deal_type: {type: new GraphQLNonNull(GraphQLString)},
-    vehilce: {type: new GraphQLNonNull(GraphQLString)},
-    finance: {
-        type: GraphQLString,
-        resolve: (customer) => `${customer.first_name} ${customer.last_name}`
-    }
-  })
+    name: "Deal",
+    description: "This represent a deal",
+    fields: () => ({
+        _id: {type: new GraphQLNonNull(GraphQLString)},
+        deal_type: {type: new GraphQLNonNull(GraphQLString)},
+        vehilce: { type: VehicleType },
+        finance: { type: financeType }
+    })
 });
 
 // This is the Root Query

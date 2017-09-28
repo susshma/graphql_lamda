@@ -1,0 +1,3 @@
+export default DealJacket = {{"_id":{"$oid":"59ca78a0ce1fca9e9db143ef"},"status":"Saved","applicant":{"$oid":"59c6908ece1fca9e9db0ca8f"},"coapplicant":null,"deal":1}
+{"_id":{"$oid":"59ca78afce1fca9e9db14405"},"status":"Saved","applicant":1,"coapplicant":null,"deal":1}
+{"_id":{"$oid":"59ca78b7ce1fca9e9db1440b"},"status":"Saved","applicant":1,"coapplicant":null,"deal":1}}
